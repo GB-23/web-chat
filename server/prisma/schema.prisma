@@ -13,10 +13,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+
+model Room {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique  
+  createdAt DateTime @default(now())
+  
+  messages  Messages[] 
+  users     Users[]    @relation("RoomUsers") 
+}
+
+model Messages {
+  id        Int      @id @default(autoincrement())
+  content   String
+  senderId  Int
+  roomId    Int
+  createdAt DateTime @default(now())
+  
+  sender    Users @relation(fields: [senderId], references: [id])
+  room      Room @relation(fields: [roomId], references: [id])
+}
+
 model Users {
   id        Int      @id @default(autoincrement())
   username  String @unique
   password   String
   Avatar   String?
   createdAt DateTime @default(now())
+  rooms     Room[]   @relation("RoomUsers") 
+  messages  Messages[]
 }
+
